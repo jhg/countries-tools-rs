@@ -1,0 +1,18 @@
+[package]
+name = "countries-tools"
+description = "ISO 3166 country codes and names"
+version = "0.1.0"
+edition = "2021"
+
+include = [
+]
+exclude = [
+    ".gitignore",
+    "Cargo.lock",
+    "countries.json",
+    "countries.json.xz",
+]
+
+[dependencies]
+num_enum = "0.6"
+parse-display = "0.8"
