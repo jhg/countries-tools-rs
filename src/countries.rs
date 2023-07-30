@@ -551,7 +551,7 @@ impl From<CountryAlpha2> for u16 {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, TryFromPrimitive, Display, FromStr)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, TryFromPrimitive, Display, FromStr)]
 #[repr(u16)]
 pub enum CountryAlpha3 {
     AND = 020,
