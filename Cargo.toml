@@ -13,8 +13,11 @@ exclude = [
     "countries.json.xz",
 ]
 
+[features]
+default = ["short-names"]
+short-names = []
+
 [dependencies]
-num_enum = "0.6"
 parse-display = "0.8"
 
 [dev-dependencies]
