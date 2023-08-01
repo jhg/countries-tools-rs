@@ -5,12 +5,58 @@ use super::Country;
 use CountryAlpha2::*;
 use CountryAlpha3::*;
 
+struct CountriesList<'a> {
+    countries: &'a [Country],
+}
+
+impl<'a> CountriesList<'a> {
+    #[inline]
+    const fn new(countries: &'a [Country]) -> Self {
+        Self { countries }
+    }
+
+    #[inline]
+    pub const fn country_by_numeric(&self, numeric: u16) -> Option<Country> {
+        if numeric > 999 {
+            return None;
+        }
+
+        let mut low = 0;
+        let mut high = self.countries.len() - 1;
+
+        while low <= high {
+            let mid = (low + high) / 2;
+            let mid_val = self.countries[mid].numeric();
+
+            if mid_val < numeric {
+                low = mid + 1;
+            } else if mid_val > numeric {
+                high = mid - 1;
+            } else {
+                return Some(self.countries[mid]);
+            }
+        }
+
+        None
+    }
+
+    #[inline]
+    pub const fn country_by_alpha2(&self, alpha2: CountryAlpha2) -> Country {
+        self.countries[alpha2 as usize]
+    }
+
+    #[inline]
+    pub const fn country_by_alpha3(&self, alpha3: CountryAlpha3) -> Country {
+        self.countries[alpha3 as usize]
+    }
+}
+
 // NOTE: This is static as that reduces the size of the binary and makes it faster.
 //       Order is important, as it is used for binary search by the `Country` numeric.
 //       Also, alpha 2 and alpha 3 codes are sorted alphabetically but the values are
 //       offsets into the array for fast lookup from the `CountryAlpha2` and `CountryAlpha3`
 //       enums.
-static COUNTRIES: [Country; 249] = [
+static COUNTRIES: CountriesList = CountriesList::new(&[
     Country::new(AF, AFG, 004, #[cfg(feature = "short-names")] "Afghanistan"),
     Country::new(AL, ALB, 008, #[cfg(feature = "short-names")] "Albania"),
     Country::new(AQ, ATA, 010, #[cfg(feature = "short-names")] "Antarctica"),
@@ -260,40 +306,20 @@ static COUNTRIES: [Country; 249] = [
     Country::new(WS, WSM, 882, #[cfg(feature = "short-names")] "Samoa"),
     Country::new(YE, YEM, 887, #[cfg(feature = "short-names")] "Yemen"),
     Country::new(ZM, ZMB, 894, #[cfg(feature = "short-names")] "Zambia"),
-];
+]);
 
 impl From<CountryAlpha2> for Country {
     #[inline]
     fn from(value: CountryAlpha2) -> Self {
-        COUNTRIES[value as usize]
+        COUNTRIES.country_by_alpha2(value)
     }
 }
 
 impl From<CountryAlpha3> for Country {
     #[inline]
     fn from(value: CountryAlpha3) -> Self {
-        COUNTRIES[value as usize]
+        COUNTRIES.country_by_alpha3(value)
     }
-}
-
-fn binary_search_by_numeric(value: u16) -> Result<usize, ()> {
-    let mut low = 0;
-    let mut high = COUNTRIES.len() - 1;
-
-    while low <= high {
-        let mid = (low + high) / 2;
-        let mid_value = COUNTRIES[mid].numeric();
-
-        if mid_value < value {
-            low = mid + 1;
-        } else if mid_value > value {
-            high = mid - 1;
-        } else {
-            return Ok(mid);
-        }
-    }
-
-    Err(())
 }
 
 impl TryFrom<u16> for Country {
@@ -301,7 +327,7 @@ impl TryFrom<u16> for Country {
 
     #[inline]
     fn try_from(value: u16) -> Result<Self, Self::Error> {
-        binary_search_by_numeric(value).map(|offset| COUNTRIES[offset])
+        COUNTRIES.country_by_numeric(value).ok_or(())
     }
 }
 
@@ -561,14 +587,14 @@ pub enum CountryAlpha2 {
 impl From<CountryAlpha3> for CountryAlpha2 {
     #[inline]
     fn from(value: CountryAlpha3) -> Self {
-        Country::from(value).alpha2()
+        COUNTRIES.country_by_alpha3(value).alpha2()
     }
 }
 
 impl From<CountryAlpha2> for u16 {
     #[inline]
     fn from(value: CountryAlpha2) -> Self {
-        Country::from(value).numeric()
+        COUNTRIES.country_by_alpha2(value).numeric()
     }
 }
 
@@ -577,7 +603,9 @@ impl TryFrom<u16> for CountryAlpha2 {
 
     #[inline]
     fn try_from(value: u16) -> Result<Self, Self::Error> {
-        Country::try_from(value).map(|country| country.alpha2())
+        COUNTRIES.country_by_numeric(value)
+        .map(|country| country.alpha2())
+        .ok_or(())
     }
 }
 
@@ -837,14 +865,14 @@ pub enum CountryAlpha3 {
 impl From<CountryAlpha2> for CountryAlpha3 {
     #[inline]
     fn from(value: CountryAlpha2) -> Self {
-        Country::from(value).alpha3()
+        COUNTRIES.country_by_alpha2(value).alpha3()
     }
 }
 
 impl From<CountryAlpha3> for u16 {
     #[inline]
     fn from(value: CountryAlpha3) -> Self {
-        Country::from(value).numeric()
+        COUNTRIES.country_by_alpha3(value).numeric()
     }
 }
 
@@ -853,7 +881,9 @@ impl TryFrom<u16> for CountryAlpha3 {
 
     #[inline]
     fn try_from(value: u16) -> Result<Self, Self::Error> {
-        Country::try_from(value).map(|country| country.alpha3())
+        COUNTRIES.country_by_numeric(value)
+        .map(|country| country.alpha3())
+        .ok_or(())
     }
 }
 
