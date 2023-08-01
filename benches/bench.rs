@@ -6,6 +6,10 @@ use std::str::FromStr;
 pub fn conversions_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("Conversions");
 
+    group.sample_size(5000);
+    group.noise_threshold(0.20);
+    group.warm_up_time(std::time::Duration::from_secs(10));
+
     group.bench_function("AD to AND", |b| b.iter(|| {
         CountryAlpha3::from(black_box(CountryAlpha2::AD))
     }));
