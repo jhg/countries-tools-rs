@@ -6,6 +6,10 @@ use CountryAlpha2::*;
 use CountryAlpha3::*;
 
 // NOTE: This is static as that reduces the size of the binary and makes it faster.
+//       Order is important, as it is used for binary search by the `Country` numeric.
+//       Also, alpha 2 and alpha 3 codes are sorted alphabetically but the values are
+//       offsets into the array for fast lookup from the `CountryAlpha2` and `CountryAlpha3`
+//       enums.
 static COUNTRIES: [Country; 249] = [
     Country::new(AF, AFG, 004, #[cfg(feature = "short-names")] "Afghanistan"),
     Country::new(AL, ALB, 008, #[cfg(feature = "short-names")] "Albania"),
