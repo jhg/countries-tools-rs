@@ -6,10 +6,24 @@ Countries list from ISO 3166-1
 
 After `cargo install countries-tools`:
 
+### Examples
+
 ```rust
 use countries_tools::{Country, CountryAlpha2};
 
-assert_eq!(Country::from(CountryAlpha2::FR).short_name(), "France");
+assert_eq!(Country::from(CountryAlpha2::ES).short_name(), "Spain");
+```
+
+```rust
+use countries_tools::{Country, CountryAlpha3};
+
+assert_eq!(Country::from(CountryAlpha3::USA).short_name(), "United States of America");
+```
+
+```rust
+use countries_tools::Country;
+
+assert_eq!(Country::try_from(392).unwrap().short_name(), "Japan");
 ```
 
 ## About this crate
