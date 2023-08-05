@@ -54,6 +54,10 @@ pub fn conversions_benchmark(c: &mut Criterion) {
         Country::try_from(black_box(894))
     }));
 
+    group.bench_function("434 to Country", |b| b.iter(|| {
+        Country::try_from(black_box(434))
+    }));
+
     group.bench_function("AD from str", |b| b.iter(|| {
         CountryAlpha2::from_str(black_box("AD"))
     }));
