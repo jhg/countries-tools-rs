@@ -258,5 +258,5 @@ use crate::countries::CountryAlpha2;
 
 #[inline]
 pub(crate) const fn short_name_from_alpha2(alpha2: CountryAlpha2) -> &'static str {
-    SHORT_NAMES[alpha2 as usize]
+    SHORT_NAMES[alpha2.internal_offset()]
 }

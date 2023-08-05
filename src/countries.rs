@@ -16,7 +16,7 @@ impl<'a> CountriesList<'a> {
     }
 
     #[inline]
-    pub fn country_by_numeric(&self, numeric: u16) -> Option<Country> {
+    pub const fn country_by_numeric(&self, numeric: u16) -> Option<Country> {
         let mut low = 0;
         let mut high = self.countries.len() - 1;
 
@@ -38,12 +38,12 @@ impl<'a> CountriesList<'a> {
 
     #[inline]
     pub const fn country_by_alpha2(&self, alpha2: CountryAlpha2) -> Country {
-        self.countries[alpha2 as usize]
+        self.countries[alpha2.internal_offset()]
     }
 
     #[inline]
     pub const fn country_by_alpha3(&self, alpha3: CountryAlpha3) -> Country {
-        self.countries[alpha3 as usize]
+        self.countries[alpha3.internal_offset()]
     }
 }
 
@@ -580,6 +580,13 @@ pub enum CountryAlpha2 {
     ZM,
 }
 
+impl CountryAlpha2 {
+    #[inline]
+    pub(crate) const fn internal_offset(&self) -> usize {
+        *self as usize
+    }
+}
+
 impl From<CountryAlpha3> for CountryAlpha2 {
     #[inline]
     fn from(value: CountryAlpha3) -> Self {
@@ -856,6 +863,13 @@ pub enum CountryAlpha3 {
     WSM,
     YEM,
     ZMB,
+}
+
+impl CountryAlpha3 {
+    #[inline]
+    pub(crate) const fn internal_offset(&self) -> usize {
+        *self as usize
+    }
 }
 
 impl From<CountryAlpha2> for CountryAlpha3 {
