@@ -3,6 +3,8 @@ name = "countries-tools"
 description = "ISO 3166 country codes and names optimized, no-std, no-alloc and without unsafe"
 version = "0.1.0"
 edition = "2021"
+license = "Unlicense"
+repository = "https://github.com/jhg/countries-tools-rs"
 
 include = [
 ]
