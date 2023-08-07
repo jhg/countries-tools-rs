@@ -5,13 +5,13 @@ use super::Country;
 use CountryAlpha2::*;
 use CountryAlpha3::*;
 
-struct CountriesList<'a> {
-    countries: &'a [Country],
+struct CountriesList<const SIZE: usize> {
+    countries: [Country; SIZE],
 }
 
-impl<'a> CountriesList<'a> {
+impl<const SIZE: usize> CountriesList<SIZE> {
     #[inline]
-    const fn new(countries: &'a [Country]) -> Self {
+    const fn new(countries: [Country; SIZE]) -> Self {
         Self { countries }
     }
 
@@ -22,14 +22,14 @@ impl<'a> CountriesList<'a> {
 
         while low <= high {
             let mid = (low + high) / 2;
-            let mid_val = self.countries[mid].numeric();
+            let mid_country = self.countries[mid];
 
-            if mid_val < numeric {
+            if mid_country.numeric() < numeric {
                 low = mid + 1;
-            } else if mid_val > numeric {
+            } else if mid_country.numeric() > numeric {
                 high = mid - 1;
             } else {
-                return Some(self.countries[mid]);
+                return Some(mid_country);
             }
         }
 
@@ -52,7 +52,7 @@ impl<'a> CountriesList<'a> {
 //       Also, alpha 2 and alpha 3 codes are sorted alphabetically but the values are
 //       offsets into the array for fast lookup from the `CountryAlpha2` and `CountryAlpha3`
 //       enums.
-static COUNTRIES: CountriesList = CountriesList::new(&[
+static COUNTRIES: CountriesList<249> = CountriesList::new([
     Country::new(AF, AFG, 004),
     Country::new(AL, ALB, 008),
     Country::new(AQ, ATA, 010),
